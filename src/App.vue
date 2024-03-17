@@ -1,47 +1,55 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <v-app>
+    <v-main>
+      <v-container>
+        <v-row>
+          <v-col cols="8">
+            <EmployeeList :employees="filteredEmployees" />
+          </v-col>
+          <v-col cols="4">
+            <v-btn block color="primary"  class="my-4" @click="openAddEmployeeModal">
+              Добавить нового сотрудника
+            </v-btn>
+            <FilterSidebar @apply-filters="applyFilters" />
+          </v-col>
+        </v-row>
+      </v-container>
+      <AddEmployeeModal v-model="showAddEmployeeModal" @employee-added="handleEmployeeAdded" />
+    </v-main>
+  </v-app>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
+<script>
+import EmployeeList from './components/EmployeeList.vue';
+import FilterSidebar from './components/FilterSidebar.vue';
+import AddEmployeeModal from './components/AddEmployeeModal.vue';
+import employees from './data/employees';
+import filterEmployees from './utils/filterEmployees';
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+export default {
+  components: {
+    EmployeeList,
+    FilterSidebar,
+    AddEmployeeModal,
+  },
+  data() {
+    return {
+      showAddEmployeeModal: false,
+      employees,
+      filteredEmployees: employees
+    };
+  },
+  methods: {
+    openAddEmployeeModal() {
+      this.showAddEmployeeModal = true;
+    },
+    handleEmployeeAdded(newEmployee) {
+      this.employees.unshift(newEmployee);
+      this.showAddEmployeeModal = false;
+    },
+    applyFilters(filters) {
+      this.filteredEmployees = filterEmployees(this.employees, filters);
+    }
   }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
+};
+</script>
